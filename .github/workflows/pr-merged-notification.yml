@@ -1,0 +1,22 @@
+name: Notify Teams on PR Merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  notify-teams:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Teams Message
+        run: |
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "text": "🔔 PR Merged in *${{ github.repository }}* 🚀\n
+            **PR:** [${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }})\n
+            **By:** ${{ github.event.pull_request.user.login }}\n
+            **Merged by:** ${{ github.actor }}"
+          }' \
+          ${{ secrets.TEAMS_WEBHOOK_URL }}
